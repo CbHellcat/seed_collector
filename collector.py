@@ -28,10 +28,10 @@ for root, dirs, files in os.walk('C:\\'):
             pass
 
 try: 
-    os.mkdir("C:\\seed_files")
+    if not os.path.exists("C:\\seed_files"):
+        os.mkdir("C:\\seed_files")
     with open(tempf) as temp:
         for line in temp:
-
             try:
                 shutil.copy2(line.rstrip(),"C:\\seed_files")
             except Exception as e:
