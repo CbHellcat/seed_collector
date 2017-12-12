@@ -38,7 +38,7 @@ def temp_write(file):
     except Exception as e:
         print e
 
-for root, dirs, files in os.walk('C:\\Users\\cbatchelor\\Desktop\\'):
+for root, dirs, files in os.walk('C:\\'):
     for filename in files:
         try:
             file=os.path.join(root,filename)
