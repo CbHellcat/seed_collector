@@ -12,23 +12,25 @@ TEXT = WORD_NAMESPACE + 't'
 rx = re.compile(r'[a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8} [a-z]{3,8}')
 
 def get_docx_text(path):
-    document = zipfile.ZipFile(path)
-    xml_content = document.read('word/document.xml')
-    document.close()
-    tree = XML(xml_content)
+    try:
+        document = zipfile.ZipFile(path)
+        xml_content = document.read('word/document.xml')
+        document.close()
+        tree = XML(xml_content)
 
-    paragraphs = []
-    for paragraph in tree.getiterator(PARA):
-        texts = [node.text
-                 for node in paragraph.getiterator(TEXT)
-                 if node.text]
-        if texts:
-            paragraphs.append(''.join(texts))
+        paragraphs = []
+        for paragraph in tree.getiterator(PARA):
+            texts = [node.text
+                     for node in paragraph.getiterator(TEXT)
+                     if node.text]
+            if texts:
+                paragraphs.append(''.join(texts))
 
-    return '\n\n'.join(paragraphs)
+        return '\n\n'.join(paragraphs)
+    except:
+        return "null"
 
 def temp_write(file):
-    print "Adding: " + file
     try:
         with open(tempf, "a+") as temp:
             temp.write(file + "\n")
@@ -36,15 +38,19 @@ def temp_write(file):
     except Exception as e:
         print e
 
-for root, dirs, files in os.walk('C:\\'):
+for root, dirs, files in os.walk('C:\\Users\\cbatchelor\\Desktop\\'):
     for filename in files:
         try:
             file=os.path.join(root,filename)
             type_test = mimetypes.guess_type(file)
             if type_test[0] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                print file
                 text = get_docx_text(file)
-                for match in rx.finditer(text):
-                    temp_write(file)
+                if text != "null":
+                    for match in rx.finditer(text):
+                        temp_write(file)
+                else:
+                    pass
             else:        
                 with open(file) as df:
                     try:
@@ -53,7 +59,6 @@ for root, dirs, files in os.walk('C:\\'):
                         print file
                         pass
                 for match in rx.finditer(data):
-                    print "trying: " + file
                     df.close()
                     temp_write(file)
                 df.close()
